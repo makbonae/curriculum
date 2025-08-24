@@ -117,13 +117,22 @@
       .topbar .title { font-size: 16px; }
     }
 
-    /* ✅ A안: 현재 페이지에서 #tableWrap만 인쇄 */
+    /* ✅ A안: 현재 페이지에서 #tableWrap만 인쇄 (모바일/데스크톱 호환) */
     @media print {
-      /* 표만 보이게 */
       body.printing-only-table * { display: none !important; }
-      body.printing-only-table #tableWrap,
-      body.printing-only-table #tableWrap * { display: initial !important; }
-      body.printing-only-table #tableWrap { width: 100% !important; }
+
+      /* 표 래퍼 및 표를 확실히 표시 */
+      body.printing-only-table #tableWrap { display: block !important; width: 100% !important; }
+      body.printing-only-table #tableWrap table { display: table !important; width: 100% !important; table-layout: fixed !important; }
+
+      /* 표 섹션/행/셀의 display를 명시적으로 지정 (iOS/Android 인쇄 호환) */
+      body.printing-only-table #tableWrap thead { display: table-header-group !important; }
+      body.printing-only-table #tableWrap tbody { display: table-row-group !important; }
+      body.printing-only-table #tableWrap tr { display: table-row !important; }
+      body.printing-only-table #tableWrap th,
+      body.printing-only-table #tableWrap td { display: table-cell !important; }
+
+      @page { size: A4; margin: 12mm; }
     }
   </style>
 </head>
@@ -193,16 +202,15 @@
       location.href = './index.html';
     }
 
-    // 카테고리 시작 (시트 데이터 로드) — 알고리즘/UI 흐름 그대로
+    // 카테고리 시작 (시트 데이터 로드)
     function startCategory(sheetName) {
-      if (currentCategory === sheetName) return; // 같은 카테고리 재클릭 방지
+      if (currentCategory === sheetName) return;
       currentCategory = sheetName;
       highlightCategory(sheetName);
       resetViewBeforeLoad();
 
       document.getElementById('loading').style.display = 'flex';
 
-      // GAS → CSV 로더로 교체
       fetchSheetRows(sheetName)
         .then(items => {
           document.getElementById('loading').style.display = 'none';
@@ -210,10 +218,8 @@
             alert('데이터가 없습니다.');
             return;
           }
-          // 인덱스 구성 (major -> item)
           dataIndex = new Map();
           items.forEach(it => { if (it?.major) dataIndex.set(String(it.major), it); });
-
           renderCards([...dataIndex.values()]);
         })
         .catch(err => {
@@ -229,7 +235,6 @@
     }
 
     function resetViewBeforeLoad() {
-      // 카드/선택/결과 초기화
       selected.clear();
       document.getElementById('cardGrid').innerHTML = '';
       document.getElementById('results').style.display = 'none';
@@ -297,13 +302,11 @@
       const wrap = document.getElementById('tableWrap');
       wrap.innerHTML = tableHTML;
       document.getElementById('results').style.display = 'block';
-      // 스크롤 이동(선택)
       document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' });
     }
 
     // 과목 테이블 만들기
     function buildSubjectsTable(rows) {
-      // 과목 문자열을 칩으로 예쁘게 표현
       const toChips = (txt) => {
         const parts = String(txt).split(/[,;\/\n]+/).map(s => s.trim()).filter(Boolean);
         if (parts.length === 0) return '<span class="chip">-</span>';
@@ -349,20 +352,21 @@
         alert('인쇄할 표가 없습니다. 먼저 전공을 선택하고 표를 생성하세요.');
         return;
       }
+
       // 표만 보이도록 클래스 적용
       document.body.classList.add('printing-only-table');
 
-      // 인쇄 종료 후 원복 (지원 브라우저)
+      // 인쇄 종료 후 원복
       const after = () => {
         document.body.classList.remove('printing-only-table');
         window.removeEventListener('afterprint', after);
       };
       window.addEventListener('afterprint', after);
 
-      // 일부 브라우저는 afterprint 이벤트가 없을 수 있으므로 안전장치
-      setTimeout(() => document.body.classList.remove('printing-only-table'), 1500);
+      // 일부 브라우저 보호용 타임아웃(미지원 시)
+      setTimeout(() => document.body.classList.remove('printing-only-table'), 2000);
 
-      // 사용자 제스처 내 호출로 모바일에서도 비교적 안정적으로 동작
+      // 사용자 제스처 내 동기 호출 → 모바일에서도 미리보기 트리거
       window.print();
     }
 
@@ -370,13 +374,8 @@
     (function attachHandlers() {
       const printBtn = document.getElementById('printTableBtn');
       const pdfBtn   = document.getElementById('savePdfTableBtn'); // (옵션) 버튼이 없으면 무시됨
-
-      if (printBtn) {
-        printBtn.addEventListener('click', printTableOnly);
-      }
-      if (pdfBtn) {
-        pdfBtn.addEventListener('click', () => downloadElementAsPDF('tableWrap', '선택과목_보기.pdf'));
-      }
+      if (printBtn) printBtn.addEventListener('click', printTableOnly);
+      if (pdfBtn)   pdfBtn.addEventListener('click', () => downloadElementAsPDF('tableWrap', '선택과목_보기.pdf'));
     })();
 
     // 우클릭 방지(선택)
