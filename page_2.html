@@ -116,6 +116,15 @@
       .card { min-height: 50px; }
       .topbar .title { font-size: 16px; }
     }
+
+    /* ✅ A안: 현재 페이지에서 #tableWrap만 인쇄 */
+    @media print {
+      /* 표만 보이게 */
+      body.printing-only-table * { display: none !important; }
+      body.printing-only-table #tableWrap,
+      body.printing-only-table #tableWrap * { display: initial !important; }
+      body.printing-only-table #tableWrap { width: 100% !important; }
+    }
   </style>
 </head>
 <body>
@@ -333,41 +342,28 @@
         .replaceAll("'", '&#39;');
     }
 
-    /* ---------- (A) 결과 테이블만 인쇄 ---------- */
+    /* ---------- (A) 결과 테이블만 인쇄 (현재 페이지에서) ---------- */
     function printTableOnly() {
-      const src = document.getElementById('tableWrap');
-      if (!src || !src.innerHTML.trim()) {
+      const wrap = document.getElementById('tableWrap');
+      if (!wrap || !wrap.innerHTML.trim()) {
         alert('인쇄할 표가 없습니다. 먼저 전공을 선택하고 표를 생성하세요.');
         return;
       }
-      const win = window.open('', '_blank');
-      // 기본 테이블/칩 스타일만 최소 포함
-      win.document.write(`
-        <html>
-          <head>
-            <meta charset="UTF-8" />
-            <title>표만 인쇄</title>
-            <style>
-              body { font-family: 'Noto Sans KR', system-ui, -apple-system, sans-serif; margin:20px; }
-              table { width:100%; border-collapse: collapse; table-layout: fixed; page-break-inside: auto; }
-              thead { display: table-header-group; }
-              tfoot { display: table-footer-group; }
-              tr { page-break-inside: avoid; page-break-after: auto; }
-              th, td { border:1px solid #e5e7eb; padding:12px 10px; text-align:left; vertical-align: top; }
-              th { background:#f3f4f6; font-weight:800; }
-              td.major { font-weight:800; }
-              .chips { display:flex; flex-wrap:wrap; gap:6px; }
-              .chip { background:#eef2ff; border:1px solid #c7d2fe; color:#1f2937; border-radius:999px; padding:4px 10px; font-size:14px; }
-              @page { size: A4; margin: 12mm; }
-            </style>
-          </head>
-          <body>${src.innerHTML}</body>
-        </html>
-      `);
-      win.document.close();
-      // 새 창 로딩 완료 후 인쇄
-      win.focus();
-      win.onload = () => { win.print(); win.close(); };
+      // 표만 보이도록 클래스 적용
+      document.body.classList.add('printing-only-table');
+
+      // 인쇄 종료 후 원복 (지원 브라우저)
+      const after = () => {
+        document.body.classList.remove('printing-only-table');
+        window.removeEventListener('afterprint', after);
+      };
+      window.addEventListener('afterprint', after);
+
+      // 일부 브라우저는 afterprint 이벤트가 없을 수 있으므로 안전장치
+      setTimeout(() => document.body.classList.remove('printing-only-table'), 1500);
+
+      // 사용자 제스처 내 호출로 모바일에서도 비교적 안정적으로 동작
+      window.print();
     }
 
     /* ---------- (C) 버튼 연결 ---------- */
