@@ -23,8 +23,8 @@
     /* ✅ 100vh 이슈 보완: 주소창 높이 변화 대응 */
     .input-container {
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-      height: 100vh;           /* 기존 값 유지(구형 브라우저) */
-      min-height: 100dvh;      /* ✅ 모바일 실제 화면 높이 */
+      height: 100vh;
+      min-height: 100dvh;
     }
     .input-container input, .input-container button { width: 300px; height: 48px; font-size: 18px; padding: 10px 16px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; }
 
@@ -124,7 +124,7 @@
       <li><b>「전공학과 월드컵」</b> 프로그램은 대학 전공에 대한 관심 수준을 알아보기 위해 제작되었습니다.</li>
       <li>선택한 계열에서 2개의 학과가 짝(pair)을 이루어 보여지며, 더 관심있는 학과를 선택하는 토너먼트 방식으로 진행합니다.</li>
       <li><b>[인문+공통+체육], [자연+공통] 중 하나</b>를 선택하여 64강부터 진행합니다.</li>
-      <li><b>공통 8, 인문 43, 자연 56, 체육 5</b> 개의 전공 학과 대상이며, [인문+공통+체육]은 임의로 선정된 8개 학과가 부전승으로 32강에 합류합니다.</li>
+      <li><b>공통 9, 인문 43, 자연 55, 체육 5</b> 개의 전공 학과 대상이며, [인문+공통+체육]은 임의로 선정된 7개 학과가 부전승으로 32강에 합류합니다.</li>
       <li>라운드가 종료되면, 8강까지 진출한 전공 학과의 리스트를 확인할 수 있습니다.</li>
     </ul>
     <div class="category-select">
@@ -158,10 +158,9 @@
     // 상세 페이지용 전체 인덱스 — major → item
     let dataIndex = new Map();
 
-    // 부전승/바이 관리
+    // 부전승 관리
     let autoPassList = [];      // inmun: 7개
     let hasAutoPass = false;    // inmun 첫 라운드 종료 직후 1회 사용
-    let firstRoundBye = null;   // inmun 첫 라운드용 추가 자동진출 1개
 
     // 안전 출력 유틸
     function escapeHTML(str) {
@@ -182,7 +181,7 @@
       });
     });
 
-    // 메인으로 (GAS 호출 → 정적 페이지 이동)
+    // 메인으로 (정적 페이지 이동)
     function goToIndex() { location.href = './index.html'; }
 
     function showInstruction() {
@@ -219,14 +218,14 @@
       document.getElementById('roundLoading').style.display = 'none';
     }
 
-    /** 카테고리 시작: CSV에서 데이터 로드 (알고리즘은 그대로) */
+    /** 카테고리 시작: CSV에서 데이터 로드 */
     function startCategory(sheetName) {
       document.getElementById('instruction').style.display = 'none';
       document.getElementById('resultArea').style.display = 'none';
       document.getElementById('detailsArea').style.display = 'none';
       showLoading('데이터');
 
-      // 🔁 GAS → CSV 로더로 교체 (assets/app.js의 fetchSheetRows 사용)
+      // CSV 로더 (assets/app.js의 fetchSheetRows 사용)
       fetchSheetRows(sheetName).then((data) => {
         if (!Array.isArray(data) || data.length === 0) {
           alert('데이터가 없습니다.');
@@ -236,17 +235,14 @@
         data = shuffleArray(data);
 
         if (sheetName === 'inmun') {
-          // 56개 사용: 부전승 7, 나머지 49 중 1개는 ‘바이’, 48개로 64강 진행
-          const selected = data.slice(0, 56);
-          autoPassList   = selected.slice(0, 7);
-          const remain49 = selected.slice(7, 56);
-          const shuffledRemain = shuffleArray(remain49);
-          firstRoundBye  = shuffledRemain[0];
-          const others48 = shuffledRemain.slice(1);
-          roundData      = buildTournament(others48);
+          // ✅ 57개 사용: 부전승 7, 남은 50개로 25쌍(1라운드)
+          const selected = data.slice(0, 57);
+          autoPassList   = selected.slice(0, 7);     // 부전승 7
+          const remain50 = selected.slice(7, 57);    // 50개
+          roundData      = buildTournament(remain50); // 25쌍 토너먼트
           hasAutoPass    = true;
 
-          // 상세용 인덱스(선택된 56개 전체)
+          // 상세용 인덱스(선택된 57개 전체)
           dataIndex = new Map(selected.map(it => [it.major, it]));
         } else {
           // jayeon: 64개 바로
@@ -254,8 +250,6 @@
           roundData   = buildTournament(used);
           hasAutoPass = false;
           autoPassList = [];
-          firstRoundBye = null;
-
           dataIndex = new Map(used.map(it => [it.major, it]));
         }
 
@@ -303,11 +297,13 @@
         if (index >= items.length) {
           let nextItems = nextRound;
 
-          // inmun: 24 승자 + 바이1 + 부전승7 = 32
-          if (items.length === 48 && hasAutoPass) {
-            if (firstRoundBye) nextItems = [...nextItems, firstRoundBye];
-            if (autoPassList && autoPassList.length === 7) nextItems = [...nextItems, ...autoPassList];
-            firstRoundBye = null; autoPassList = []; hasAutoPass = false;
+          // ✅ inmun: 1라운드(50개) 종료 후 → 승자 25 + 부전승 7 = 32강
+          if (items.length === 50 && hasAutoPass) {
+            if (autoPassList && autoPassList.length === 7) {
+              nextItems = [...nextItems, ...autoPassList];
+            }
+            autoPassList = [];
+            hasAutoPass = false;
             nextItems = shuffleArray(nextItems);
           }
 
@@ -317,6 +313,7 @@
           return;
         }
 
+        // 홀수 방지용: 마지막 1개 남았을 때 자동 진출
         if (index === items.length - 1) {
           nextRound.push(items[index]);
           index += 1;
@@ -474,7 +471,7 @@
 
     function backToIndex(){
       roundData = []; roundResults = []; roundHistory = [];
-      autoPassList = []; hasAutoPass = false; firstRoundBye = null;
+      autoPassList = []; hasAutoPass = false;
       dataIndex = new Map();
       document.getElementById('resultArea').style.display='none';
       document.getElementById('detailsArea').style.display='none';
