@@ -27,6 +27,32 @@
     .btn:active { transform: translateY(1px); }
     .material-icons { font-size:24px; }
     .highlight-doc { color: #007ACC; font-weight: bold; }
+
+    /* === 모바일 최적화: 화면폭이 640px 이하일 때 === */
+    @media (max-width: 640px) {
+      .wrap { margin: 24px auto; padding: 0 16px; }
+      h1 { font-size: 22px; margin: 12px 0 6px; }
+      h4 { margin: 0 0 16px; font-size: 14px; color:#6b7280; }
+      ul.guide { font-size: 16px; line-height:1.7; padding-left:16px; }
+      .btns { gap:10px; }
+      .btn {
+        width: 100%;      /* 버튼을 한 줄에 하나씩 꽉 차게 */
+        max-width: none;
+        font-size: 18px;
+        padding: 12px 14px;
+        line-height: 1.25;
+        white-space: normal; /* 긴 텍스트 줄바꿈 허용 */
+      }
+      .material-icons { font-size: 20px; }
+    }
+
+    /* 초소형(360px 이하) 보완 */
+    @media (max-width: 360px) {
+      h1 { font-size: 20px; }
+      ul.guide { font-size: 15px; }
+      .btn { font-size: 16px; padding:10px 12px; }
+      .material-icons { font-size: 18px; }
+    }
   </style>
 </head>
 <body>
