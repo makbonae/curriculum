@@ -1,1 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>전공학과 월드컵 – 시작</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+
+  <!-- 기본 스타일: 필요하면 자유롭게 수정 -->
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-pressed: #1e40af;
+      --ring: rgba(37, 99, 235, 0.35);
+      --border: #e5e7eb;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 80% -10%, #eef2ff, transparent 60%), var(--bg);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 48px auto 72px;
+      padding: 0 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .brand {
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      background: #fff;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+      padding: 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 22px;
+    }
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+      margin: 6px 0 10px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 560px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      height: 44px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      font-size: 15px;
+      background: #fff;
+      transition: box-shadow .2s, border-color .2s, transform .02s;
+    }
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--primary);
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+      transition: transform .02s, filter .15s, background .15s, border-color .15s;
+    }
+    .btn.secondary {
+      background: #fff;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn:hover { filter: brightness(1.03); }
+    .btn:active { transform: translateY(1px); }
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        전공학과 월드컵
+        <span class="badge">GitHub Pages · CSV</span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <!-- 왼쪽: 소개/가이드 -->
+      <div class="card">
+        <div class="title">시작하기</div>
+        <p class="subtitle">
+          구글 스프레드시트를 <b>“웹에 게시(CSV)”</b>로 공개하고, 이 페이지에서
+          <b>토너먼트</b> 또는 <b>과목/상세 보기</b>로 이동하세요.<br />
+          입력한 정보는 다음 페이지로 <b>URL 파라미터</b>로 전달됩니다.
+        </p>
+
+        <ol class="list">
+          <li>스프레드시트에서 각 시트를 <b>CSV로 게시</b>하세요.</li>
+          <li><code>assets/app.js</code>의 <code>CSV_URLS</code>에 URL을 넣습니다.</li>
+          <li>아래 버튼으로 페이지를 이동해 동작을 확인하세요.</li>
+        </ol>
+
+        <div class="actions" style="margin-top:16px">
+          <!-- 단순 이동(입력값 무시) -->
+          <a class="btn" href="./page_1.html">토너먼트 시작</a>
+          <a class="btn secondary" href="./page_2.html">과목/상세 보기</a>
+        </div>
+
+        <p class="note">※ 위 버튼은 입력 폼과 무관하게 이동합니다. 입력값을 넘기려면 오른쪽 카드의 버튼을 사용하세요.</p>
+      </div>
+
+      <!-- 오른쪽: 선택(입력) → 이동 -->
+      <div class="card">
+        <div class="title">선택 정보(선택 사항)</div>
+        <div class="grid">
+          <div>
+            <label for="school">학교명</label>
+            <input id="school" placeholder="예) 양정고등학교" />
+          </div>
+          <div>
+            <label for="student_id">학번</label>
+            <input id="student_id" placeholder="예) 2201" />
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <label for="student_name">이름</label>
+          <input id="student_name" placeholder="예) 홍길동" />
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="goTournament">입력값 포함 · 토너먼트</button>
+          <button class="btn secondary" id="goSubjects">입력값 포함 · 과목/상세</button>
+        </div>
+        <p class="note">입력하지 않아도 이동할 수 있습니다. 입력하면 다음 페이지에서 참고용으로 활용할 수 있어요.</p>
+      </div>
+    </section>
+
+    <footer>
+      © 2025 전공학과 월드컵 · GitHub Pages / CSV 공개 방식
+    </footer>
+  </div>
+
+  <!-- 간단한 내비게이션 스크립트: 입력값을 URL 파라미터로 전달 -->
+  <script>
+    function qs(el){ return document.querySelector(el); }
+    function buildQuery() {
+      const school = qs('#school')?.value?.trim() || '';
+      const student_id = qs('#student_id')?.value?.trim() || '';
+      const student_name = qs('#student_name')?.value?.trim() || '';
+      const params = new URLSearchParams();
+      if (school) params.set('school', school);
+      if (student_id) params.set('student_id', student_id);
+      if (student_name) params.set('student_name', student_name);
+      const q = params.toString();
+      return q ? `?${q}` : '';
+    }
+
+    qs('#goTournament').addEventListener('click', () => {
+      location.href = `./page_1.html${buildQuery()}`;
+    });
+    qs('#goSubjects').addEventListener('click', () => {
+      location.href = `./page_2.html${buildQuery()}`;
+    });
+  </script>
+</body>
+</html>
 
