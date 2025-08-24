@@ -32,7 +32,7 @@
 <body>
   <div class="wrap">
     <header>
-      <div class="brand">전공학과 월드컵 <span class="pill">CSV 모드</span></div>
+      <div class="brand">전공학과 월드컵</div>
       <div class="row">
         <a class="btn secondary" href="./index.html">홈</a>
       </div>
@@ -49,13 +49,11 @@
 
       <div id="stage" class="hidden">
         <div class="progress" id="roundInfo"></div>
-        <div class="vs" id="vsBox">
-          <!-- 두 옵션 카드가 여기 렌더링 됩니다 -->
-        </div>
+        <div class="vs" id="vsBox"></div>
       </div>
 
       <div id="result" class="hidden">
-        <div class="winner">🏆 우승 전공</div>
+        <div class="winner">우승 전공</div>
         <div id="winnerText" style="margin-top:8px"></div>
         <div class="row" style="margin-top:12px">
           <button onclick="restart()">다시 하기</button>
@@ -70,11 +68,9 @@
   <script src="./assets/app.js"></script>
 
   <script>
-    // 페이지 공용 로딩 표시 함수 (assets/app.js에서 호출 가능하게 전역 제공)
     function showLoading(msg){ const el=document.getElementById('loading'); el.textContent=msg||'로딩 중…'; el.classList.remove('hidden'); }
     function hideLoading(){ document.getElementById('loading').classList.add('hidden'); }
 
-    // 간이 토너먼트 상태
     let CURRENT = { items:[], round:1, pairs:[], idx:0, winners:[], sheetKey:null };
 
     function restart(){
@@ -83,14 +79,12 @@
       document.getElementById('sheetBadge').textContent = '시작 전';
     }
 
-    // assets/app.js가 데이터 로딩을 끝내면 이 함수를 호출하도록 설계됨.
-    // (app.js의 startCategory()가 items, sheetKey를 넘김)
+    // assets/app.js의 startCategory()가 호출 완료 시 이 함수로 진입
     function startTournament(items, sheetKey){
       CURRENT.sheetKey = sheetKey;
       document.getElementById('sheetBadge').textContent = (sheetKey === 'inmun' ? '인문' : '자연');
 
-      // 최소 2개만 있으면 진행. 많을수록 자동 페어링
-      CURRENT.items = shuffle(items.slice()); // 얕은복사 후 셔플
+      CURRENT.items = shuffle(items.slice());
       CURRENT.round = 1;
       makePairs();
       document.getElementById('result').classList.add('hidden');
@@ -101,12 +95,9 @@
 
     function makePairs(){
       const arr = CURRENT.items.slice();
-      // 홀수면 마지막 하나 부전승 처리
       if (arr.length % 2 === 1) arr.push({ __bye: true, ...arr[arr.length-1] });
       CURRENT.pairs = [];
-      for (let i=0; i<arr.length; i+=2){
-        CURRENT.pairs.push([arr[i], arr[i+1]]);
-      }
+      for (let i=0; i<arr.length; i+=2){ CURRENT.pairs.push([arr[i], arr[i+1]]); }
       CURRENT.winners = [];
       document.getElementById('roundInfo').textContent = `Round ${CURRENT.round} · 참가 ${arr.length}개 / 매치 ${CURRENT.pairs.length}개`;
     }
@@ -117,12 +108,7 @@
       CURRENT.winners.push(chosen.__bye ? pair[0] : chosen);
       CURRENT.idx++;
       if (CURRENT.idx >= CURRENT.pairs.length){
-        // 라운드 종료 → 다음 라운드 준비
-        if (CURRENT.winners.length === 1){
-          // 우승
-          showWinner(CURRENT.winners[0]);
-          return;
-        }
+        if (CURRENT.winners.length === 1){ showWinner(CURRENT.winners[0]); return; }
         CURRENT.items = CURRENT.winners.slice();
         CURRENT.round++;
         makePairs();
@@ -163,10 +149,7 @@
       document.getElementById('winnerText').innerHTML = text;
     }
 
-    function shuffle(a){
-      for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-      return a;
-    }
+    function shuffle(a){ for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
     function escapeHTML(s){ return String(s??'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;' }[m])); }
   </script>
 </body>
