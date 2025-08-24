@@ -83,16 +83,21 @@
       .topbar .title { font-size: 16px; }
     }
 
-    /* ✅ A안: 현재 페이지에서 #tableWrap만 인쇄 (부모도 표시) */
+    /* ✅ A안: 현재 페이지에서 표만 인쇄 (부모/내용 복구 + 제목 출력) */
     @media print {
+      /* 기본적으로 전부 숨김 */
       body.printing-only-table * { display: none !important; }
 
-      /* 조상들을 표시해 #tableWrap이 실제로 렌더되게 함 */
+      /* 조상/영역 복구: 렌더링 경로 보장 */
       body.printing-only-table .container,
       body.printing-only-table .results,
       body.printing-only-table #results { display:block !important; }
 
-      /* 표와 그 내부 요소를 명시적으로 표시 */
+      /* 상단 제목(원하신 문구) 출력 */
+      body.printing-only-table .topbar { display:block !important; }
+      body.printing-only-table .topbar .title { display:block !important; margin-bottom:12px; }
+
+      /* 표와 내부 구조 복구 */
       body.printing-only-table #tableWrap { display:block !important; width:100% !important; }
       body.printing-only-table #tableWrap table { display:table !important; width:100% !important; table-layout:fixed !important; }
       body.printing-only-table #tableWrap thead { display:table-header-group !important; }
@@ -100,6 +105,10 @@
       body.printing-only-table #tableWrap tr { display:table-row !important; }
       body.printing-only-table #tableWrap th,
       body.printing-only-table #tableWrap td { display:table-cell !important; }
+
+      /* ✅ 과목 칩 UI도 보이도록 복구 */
+      body.printing-only-table #tableWrap .chips { display:flex !important; flex-wrap:wrap !important; gap:6px !important; }
+      body.printing-only-table #tableWrap .chip { display:inline-block !important; }
 
       @page { size: A4; margin: 12mm; }
     }
