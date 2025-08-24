@@ -46,13 +46,7 @@
 
     #resultArea table.summary-table tr:not(:first-child) td:nth-child(3) { text-align: left; }
 
-    #resultArea .results-note {
-      font-size: 24px;
-      color: #6b7280;
-      margin: 12px 60px 18px;
-      text-align: left;
-      line-height: 1.5;
-    }
+    #resultArea .results-note { font-size: 24px; color: #6b7280; margin: 12px 60px 18px; text-align: left; line-height: 1.5; }
 
     button { font-size: 24px; margin: 10px; padding: 10px 20px; }
     .circle-list { list-style: none; counter-reset: section; padding-left: 0; }
@@ -92,9 +86,11 @@
 
       #resultArea table { margin: 12px; width: calc(100% - 24px); table-layout: fixed; }
       #resultArea table.summary-table th,
-      #resultArea table.summary-table td { padding: 8px 8px; font-size: 16px; word-break: break-word; }
+      #resultArea table.summary-table td { padding: 8px 8px; font-size: 12px; word-break: break-word; }
+      #resultArea table.summary-table th:nth-child(1),
+      #resultArea table.summary-table td:nth-child(1) { width: 16%; }
       #resultArea table.summary-table th:nth-child(2),
-      #resultArea table.summary-table td:nth-child(2) { min-width: 140px; }
+      #resultArea table.summary-table td:nth-child(2) { width: 24%; min-width: 140px; }
       #resultArea table.summary-table tr:not(:first-child) td:nth-child(3) { text-align: left; white-space: normal; }
       #resultArea .results-note { font-size: 16px; margin: 8px 12px 12px; line-height: 1.6; }
       #resultArea { overflow-x: auto; -webkit-overflow-scrolling: touch; }
