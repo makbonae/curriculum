@@ -38,6 +38,8 @@
     .card.selected { background:#eef2ff; border-color:#6366f1; box-shadow: inset 0 0 0 2px #6366f1; }
 
     .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top: 18px; }
+    .topbar .title { font-size: 24px; font-weight: 800; }
+    .topbar .title .title-sub { font-size: 0.7em; font-weight: 450; }
     .btn.primary { background:#111827; color:#fff;border-color:#111827; }
     .btn {
       font-size:16px; padding:10px 16px; border-radius:10px; border:1px solid #d1d5db; background:#fff; cursor:pointer;
@@ -117,7 +119,10 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <div class="title">전공 관련 고등학교 선택 과목 보기 (양정고등학교 교수학습지원센터)</div>
+      <div class="title">
+        전공 관련 고등학교 선택 과목 보기
+        <small class="title-sub">(양정고등학교 교수학습지원센터)</small>
+      </div>
       <button class="icon-btn" onclick="goToIndex()">
         <span class="material-icons">home</span> 메인으로
       </button>
