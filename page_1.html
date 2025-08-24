@@ -19,6 +19,7 @@
 
     .input-container, .instruction, .category-select, .tournament, .result-area, .round-loading, .details-area { display: none; margin-top: 50px; }
     .instruction { max-width: 900px; margin: 50px auto 24px; text-align: left; line-height: 1.5em; padding: 0 24px }
+    .school-note { font-size: 0.8em; }  /* 부모(본문) 대비 80% */
 
     /* ✅ 100vh 이슈 보완: 주소창 높이 변화 대응 */
     .input-container {
@@ -109,7 +110,7 @@
 </head>
 <body>
   <h1>전공학과 이상형 월드컵</h1></b>
-  (양정고등학교 교수학습지원센터)
+  <span class="school-note">(양정고등학교 교수학습지원센터)</span>
   <div class="input-container" id="inputForm">
     <input id="school" placeholder="학교명" />
     <div style="height:10px"></div>
