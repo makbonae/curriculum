@@ -98,6 +98,8 @@
       /* 상단 제목(원하신 문구) 출력 */
       body.printing-only-table .topbar { display:block !important; }
       body.printing-only-table .topbar .title { display:block !important; margin-bottom:12px; }
+      /* ⬇️ 이 줄을 추가: 소제목(학교명)도 인쇄에 포함 + 작은 글씨 */
+      body.printing-only-table .topbar .title .title-sub { display: inline !important; font-size: 0.85em !important; color: #6b7280 !important; margin-left: 6px; }
 
       /* 표와 내부 구조 복구 */
       body.printing-only-table #tableWrap { display:block !important; width:100% !important; }
