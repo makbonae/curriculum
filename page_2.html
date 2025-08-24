@@ -4,36 +4,28 @@
   <meta charset="UTF-8" />
   <title>전공학과 월드컵 - 과목 보기 (page_2)</title>
 
-  <!-- ✅ 모바일 레이아웃을 위한 뷰포트 -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- 머티리얼 아이콘 (선택사항: 홈 아이콘 등) -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body { font-family: 'Noto Sans KR', system-ui, -apple-system, sans-serif; margin:0; background:#f9fafb; color:#111827; }
     .container { max-width: 1100px; margin: 32px auto 60px; padding: 0 20px; }
     button:active{ transform: translateY(1px); }
 
-    /* 상단 바 */
     .topbar { display:flex; justify-content: space-between; align-items:center; margin-bottom: 18px; }
     .topbar .title { font-size: 24px; font-weight: 800; }
     .icon-btn { border:none; background:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-size:18px; }
     .icon-btn .material-icons { font-size: 26px; vertical-align: middle; }
 
-    /* 카테고리 선택 */
     .category { display:flex; gap:12px; flex-wrap: wrap; margin: 14px 0 22px; }
     .category button { font-size:18px; padding:12px 18px; border-radius:10px; border:1px solid #d1d5db; background:#fff; cursor:pointer; }
     .category button.active { background:#111827; color:#fff; border-color:#111827; }
 
-    /* 안내/상태 */
     .note { font-size: 14px; color:#6b7280; margin-top: 6px; }
 
-    /* 로딩 */
     .loading { display:none; align-items:center; gap:10px; color:#374151; margin: 12px 0 8px; }
     .spinner { border:4px solid #e5e7eb; border-top:4px solid #6b7280; border-radius:50%; width:22px; height:22px; animation:spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* 카드 그리드 */
     .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:14px; margin-top: 18px; }
     .card {
       background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:8px;
@@ -45,7 +37,6 @@
     .card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
     .card.selected { background:#eef2ff; border-color:#6366f1; box-shadow: inset 0 0 0 2px #6366f1; }
 
-    /* 하단 툴바 */
     .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top: 18px; }
     .btn.primary { background:#111827; color:#fff;border-color:#111827; }
     .btn {
@@ -54,83 +45,61 @@
     }
     .btn:disabled { opacity:.5; cursor:not-allowed; }
 
-    /* 결과 테이블 */
     .results { display:none; margin-top: 24px; }
-    #tableWrap { /* 👇 모바일에서 가로 스크롤 허용 */
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
+    #tableWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table {
-      width:100%;
-      border-collapse: collapse;
-      background:#fff;
-      border-radius:12px;
-      overflow: hidden;
-      table-layout: fixed;
-      min-width: 560px; /* 👈 화면이 더 좁으면 가로 스크롤 */
+      width:100%; border-collapse: collapse; background:#fff; border-radius:12px; overflow: hidden;
+      table-layout: fixed; min-width: 560px;
     }
-    th, td {
-      border:1px solid #e5e7eb;
-      padding:12px 10px;
-      text-align:left;
-      vertical-align: top;
-      width: 25%;
-    }
+    th, td { border:1px solid #e5e7eb; padding:12px 10px; text-align:left; vertical-align: top; width: 25%; }
     th { background:#f3f4f6; font-weight:800; }
     td.major { font-weight: 800; }
     .chips { display:flex; flex-wrap:wrap; gap:6px; }
-    .chip {
-      background:#eef2ff; border:1px solid #c7d2fe; color:#1f2937;
-      border-radius:999px; padding:4px 10px; font-size:14px;
-    }
+    .chip { background:#eef2ff; border:1px solid #c7d2fe; color:#1f2937; border-radius:999px; padding:4px 10px; font-size:14px; }
 
-    /* 숨김/표시 토글 */
     .hidden { display:none !important; }
 
     .print-area { margin-top: 20px; text-align: center; }
     .print-area .btn { background:#111827; color:#fff; border-color:#111827; }
 
-    /* ====== ✅ 모바일 최적화 (≤ 640px) ====== */
     @media (max-width: 640px) {
       .container { margin: 20px auto 36px; padding: 0 12px; }
       .topbar .title { font-size: 18px; line-height: 1.3; }
       .icon-btn { font-size: 16px; }
       .icon-btn .material-icons { font-size: 22px; }
-
       .category { gap:8px; }
       .category button { width:100%; font-size:16px; padding:10px 12px; }
-
       .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
       .card { font-size:16px; min-height:56px; padding:10px; }
-
       .toolbar { flex-direction: column; align-items: stretch; }
       .toolbar .btn { width:100%; justify-content:center; }
-
       .results { margin-top:18px; }
       th, td { padding:10px 8px; font-size:14px; }
       .chip { font-size:12px; padding:3px 8px; }
     }
 
-    /* ====== ✅ 초소형 보정 (≤ 360px) ====== */
     @media (max-width: 360px) {
       .card { min-height: 50px; }
       .topbar .title { font-size: 16px; }
     }
 
-    /* ✅ A안: 현재 페이지에서 #tableWrap만 인쇄 (모바일/데스크톱 호환) */
+    /* ✅ A안: 현재 페이지에서 #tableWrap만 인쇄 (부모도 표시) */
     @media print {
       body.printing-only-table * { display: none !important; }
 
-      /* 표 래퍼 및 표를 확실히 표시 */
-      body.printing-only-table #tableWrap { display: block !important; width: 100% !important; }
-      body.printing-only-table #tableWrap table { display: table !important; width: 100% !important; table-layout: fixed !important; }
+      /* 조상들을 표시해 #tableWrap이 실제로 렌더되게 함 */
+      body.printing-only-table .container,
+      body.printing-only-table .results,
+      body.printing-only-table #results { display:block !important; }
 
-      /* 표 섹션/행/셀의 display를 명시적으로 지정 (iOS/Android 인쇄 호환) */
-      body.printing-only-table #tableWrap thead { display: table-header-group !important; }
-      body.printing-only-table #tableWrap tbody { display: table-row-group !important; }
-      body.printing-only-table #tableWrap tr { display: table-row !important; }
+      /* 표와 그 내부 요소를 명시적으로 표시 */
+      body.printing-only-table #tableWrap { display:block !important; width:100% !important; }
+      body.printing-only-table #tableWrap table { display:table !important; width:100% !important; table-layout:fixed !important; }
+      body.printing-only-table #tableWrap thead { display:table-header-group !important; }
+      body.printing-only-table #tableWrap tbody { display:table-row-group !important; }
+      body.printing-only-table #tableWrap tr { display:table-row !important; }
       body.printing-only-table #tableWrap th,
-      body.printing-only-table #tableWrap td { display: table-cell !important; }
+      body.printing-only-table #tableWrap td { display:table-cell !important; }
 
       @page { size: A4; margin: 12mm; }
     }
@@ -138,7 +107,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- 상단 바 -->
     <div class="topbar">
       <div class="title">전공 관련 고등학교 선택 과목 보기 (양정고등학교 교수학습지원센터)</div>
       <button class="icon-btn" onclick="goToIndex()">
@@ -146,7 +114,6 @@
       </button>
     </div>
 
-    <!-- 카테고리 선택 -->
     <div>
       <div class="category" id="categoryBar">
         <button id="btnInmun" onclick="startCategory('inmun')">인문+공통+체육</button>
@@ -155,13 +122,10 @@
       <div class="note">「인문+공통+체육」또는「자연+공통」중에 관심 계열을 선택하면 <b>학과(major)</b> 목록이 표시됩니다. 여러 개의 관심 학과를 선택할 수 있으며, 아래〈고등학교 선택과목 보기〉버튼을 클릭하면 전공 관련 이수 과목을 알아 볼 수 있습니다.</div>
     </div>
 
-    <!-- 로딩 -->
     <div class="loading" id="loading"><div class="spinner"></div> <span>데이터 불러오는 중…</span></div>
 
-    <!-- 카드 그리드 -->
     <div class="grid" id="cardGrid"></div>
 
-    <!-- 하단 툴바 -->
     <div class="toolbar">
       <button class="btn primary" id="showSubjectsBtn" onclick="showSelectedSubjects()" disabled>
         <span class="material-icons">menu_book</span> 고등학교 선택과목 보기
@@ -171,15 +135,12 @@
       </button>
     </div>
 
-    <!-- 결과 테이블 -->
     <div class="results" id="results">
       <h3>선택 전공의 과목 안내</h3>
       <div class="note">선택된 전공의 <b>일반선택 / 진로선택 / 융합선택</b> 과목을 확인하세요.</div>
       <div id="tableWrap"></div>
 
-      <!-- 👇 인쇄 버튼을 결과 테이블 뒤에 중앙 정렬로 추가 -->
       <div class="print-area">
-        <!-- 결과 테이블만 인쇄 -->
         <button class="btn" id="printTableBtn">
           <span class="material-icons">print</span> 표만 인쇄
         </button>
@@ -187,37 +148,27 @@
     </div>
   </div>
 
-  <!-- CSV 파서 & 앱 유틸 (CSV_URLS, fetchSheetRows 등) -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="./assets/app.js"></script>
 
   <script>
-    // 데이터 보관
     let dataIndex = new Map(); // major -> item
-    let selected = new Set();  // 선택된 major
+    let selected = new Set();
     let currentCategory = null;
 
-    // 홈(메인)으로: 정적 페이지 이동
-    function goToIndex() {
-      location.href = './index.html';
-    }
+    function goToIndex() { location.href = './index.html'; }
 
-    // 카테고리 시작 (시트 데이터 로드)
     function startCategory(sheetName) {
       if (currentCategory === sheetName) return;
       currentCategory = sheetName;
       highlightCategory(sheetName);
       resetViewBeforeLoad();
-
       document.getElementById('loading').style.display = 'flex';
 
       fetchSheetRows(sheetName)
         .then(items => {
           document.getElementById('loading').style.display = 'none';
-          if (!Array.isArray(items) || items.length === 0) {
-            alert('데이터가 없습니다.');
-            return;
-          }
+          if (!Array.isArray(items) || items.length === 0) { alert('데이터가 없습니다.'); return; }
           dataIndex = new Map();
           items.forEach(it => { if (it?.major) dataIndex.set(String(it.major), it); });
           renderCards([...dataIndex.values()]);
@@ -246,7 +197,6 @@
       document.getElementById('showSubjectsBtn').disabled = state;
     }
 
-    // 카드 렌더
     function renderCards(list) {
       const grid = document.getElementById('cardGrid');
       grid.innerHTML = '';
@@ -261,69 +211,43 @@
       });
     }
 
-    // 선택 토글
     function toggleSelect(cardEl) {
       const major = cardEl.dataset.major;
-      if (selected.has(major)) {
-        selected.delete(major);
-        cardEl.classList.remove('selected');
-      } else {
-        selected.add(major);
-        cardEl.classList.add('selected');
-      }
+      if (selected.has(major)) { selected.delete(major); cardEl.classList.remove('selected'); }
+      else { selected.add(major); cardEl.classList.add('selected'); }
       setShowBtnDisabled(selected.size === 0);
     }
 
-    // 선택 해제
     function clearSelection() {
       selected.clear();
       document.querySelectorAll('.card.selected').forEach(el => el.classList.remove('selected'));
       setShowBtnDisabled(true);
     }
 
-    // 선택된 전공의 과목 보기
     function showSelectedSubjects() {
-      if (selected.size === 0) {
-        alert('전공을 하나 이상 선택해주세요.');
-        return;
-      }
+      if (selected.size === 0) { alert('전공을 하나 이상 선택해주세요.'); return; }
       const majors = [...selected];
-      const rows = majors
-        .map(m => dataIndex.get(m))
-        .filter(Boolean)
-        .map(it => ({
-          major: it.major ?? '',
-          sub1: it.sub1 ?? '',
-          sub2: it.sub2 ?? '',
-          sub3: it.sub3 ?? ''
-        }));
-
-      const tableHTML = buildSubjectsTable(rows);
+      const rows = majors.map(m => dataIndex.get(m)).filter(Boolean).map(it => ({
+        major: it.major ?? '', sub1: it.sub1 ?? '', sub2: it.sub2 ?? '', sub3: it.sub3 ?? ''
+      }));
       const wrap = document.getElementById('tableWrap');
-      wrap.innerHTML = tableHTML;
+      wrap.innerHTML = buildSubjectsTable(rows);
       document.getElementById('results').style.display = 'block';
       document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' });
     }
 
-    // 과목 테이블 만들기
     function buildSubjectsTable(rows) {
       const toChips = (txt) => {
         const parts = String(txt).split(/[,;\/\n]+/).map(s => s.trim()).filter(Boolean);
         if (parts.length === 0) return '<span class="chip">-</span>';
         return `<div class="chips">${parts.map(p => `<span class="chip">${escapeHTML(p)}</span>`).join('')}</div>`;
       };
-
-      let html = `<table>
-        <thead>
-          <tr>
-            <th style="width:22%;">전공(major)</th>
-            <th style="width:26%;">일반선택 (sub1)</th>
-            <th style="width:26%;">진로선택 (sub2)</th>
-            <th style="width:26%;">융합선택 (sub3)</th>
-          </tr>
-        </thead>
-        <tbody>`;
-
+      let html = `<table><thead><tr>
+        <th style="width:22%;">전공(major)</th>
+        <th style="width:26%;">일반선택 (sub1)</th>
+        <th style="width:26%;">진로선택 (sub2)</th>
+        <th style="width:26%;">융합선택 (sub3)</th>
+      </tr></thead><tbody>`;
       rows.forEach(r => {
         html += `<tr>
           <td class="major">${escapeHTML(r.major)}</td>
@@ -332,53 +256,47 @@
           <td>${toChips(r.sub3)}</td>
         </tr>`;
       });
-
       html += `</tbody></table>`;
       return html;
     }
 
-    // 안전 출력
     function escapeHTML(str) {
-      return String(str)
-        .replaceAll('&','&amp;').replaceAll('<','&lt;')
-        .replaceAll('>','&gt;').replaceAll('"','&quot;')
-        .replaceAll("'", '&#39;');
+      return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;')
+        .replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'", '&#39;');
     }
 
-    /* ---------- (A) 결과 테이블만 인쇄 (현재 페이지에서) ---------- */
+    /* ---------- A안: 현재 페이지에서 표만 인쇄 ---------- */
     function printTableOnly() {
       const wrap = document.getElementById('tableWrap');
-      if (!wrap || !wrap.innerHTML.trim()) {
-        alert('인쇄할 표가 없습니다. 먼저 전공을 선택하고 표를 생성하세요.');
-        return;
-      }
+      if (!wrap || !wrap.innerHTML.trim()) { alert('인쇄할 표가 없습니다. 먼저 전공을 선택하고 표를 생성하세요.'); return; }
 
-      // 표만 보이도록 클래스 적용
       document.body.classList.add('printing-only-table');
 
-      // 인쇄 종료 후 원복
       const after = () => {
         document.body.classList.remove('printing-only-table');
         window.removeEventListener('afterprint', after);
+        window.onafterprint = null;
       };
       window.addEventListener('afterprint', after);
+      window.onafterprint = after; // 일부 브라우저 호환
 
-      // 일부 브라우저 보호용 타임아웃(미지원 시)
-      setTimeout(() => document.body.classList.remove('printing-only-table'), 2000);
+      // 스타일 적용이 렌더링된 다음 인쇄(PC에서 미리보기 안 뜨는 문제 방지)
+      const doPrint = () => window.print();
+      if (window.requestAnimationFrame) {
+        requestAnimationFrame(() => requestAnimationFrame(doPrint));
+      } else {
+        setTimeout(doPrint, 0);
+      }
 
-      // 사용자 제스처 내 동기 호출 → 모바일에서도 미리보기 트리거
-      window.print();
+      // 안전장치(혹시 afterprint가 동작 안 하면 복구)
+      setTimeout(() => document.body.classList.remove('printing-only-table'), 3000);
     }
 
-    /* ---------- (C) 버튼 연결 ---------- */
     (function attachHandlers() {
       const printBtn = document.getElementById('printTableBtn');
-      const pdfBtn   = document.getElementById('savePdfTableBtn'); // (옵션) 버튼이 없으면 무시됨
       if (printBtn) printBtn.addEventListener('click', printTableOnly);
-      if (pdfBtn)   pdfBtn.addEventListener('click', () => downloadElementAsPDF('tableWrap', '선택과목_보기.pdf'));
     })();
 
-    // 우클릭 방지(선택)
     document.addEventListener('contextmenu', e => e.preventDefault(), { passive:false });
   </script>
 </body>
