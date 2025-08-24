@@ -32,11 +32,11 @@
 <body>
   <div class="wrap">
     <header>
-      <div class="brand">과목/상세 보기 <span id="badge" class="pill">시작 전</span></div>
+      <div class="brand">전공 관련 고등학교 선택 과목 보기 <span id="badge" class="pill">시작 전</span></div>
       <div class="row">
-        <a class="btn secondary" href="./index.html">홈</a>
-        <button onclick="loadSubjects('inmun')">인문 불러오기</button>
-        <button class="secondary" onclick="loadSubjects('jayeon')">자연 불러오기</button>
+        <a class="btn secondary" href="./index.html">메인으로</a>
+        <button onclick="loadSubjects('inmun')">인문+공통+체육</button>
+        <button class="secondary" onclick="loadSubjects('jayeon')">자연+공통</button>
       </div>
     </header>
 
@@ -136,10 +136,9 @@
 
     function escapeHTML(s){ return String(s??'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;' }[m])); }
 
-    // URL 파라미터로 자동 로드 (index에서 넘긴 값은 이 페이지에선 사용하지 않지만 틀만 유지)
     (function autoLoadByParam(){
       const u = new URL(location.href);
-      const auto = u.searchParams.get('auto'); // ?auto=inmun 같이 쓸 수 있음
+      const auto = u.searchParams.get('auto'); // ?auto=inmun | jayeon
       if (auto === 'inmun' || auto === 'jayeon'){
         loadSubjects(auto);
       }
