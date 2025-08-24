@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>전공학과 월드컵 - 과목 보기 (page_2)</title>
+
+  <!-- ✅ 모바일 레이아웃을 위한 뷰포트 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <!-- 머티리얼 아이콘 (선택사항: 홈 아이콘 등) -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
@@ -52,20 +56,25 @@
 
     /* 결과 테이블 */
     .results { display:none; margin-top: 24px; }
+    #tableWrap { /* 👇 모바일에서 가로 스크롤 허용 */
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
     table {
       width:100%;
       border-collapse: collapse;
       background:#fff;
       border-radius:12px;
       overflow: hidden;
-      table-layout: fixed;   /* 👈 고정 레이아웃 */
+      table-layout: fixed;
+      min-width: 560px; /* 👈 화면이 더 좁으면 가로 스크롤 */
     }
     th, td {
       border:1px solid #e5e7eb;
       padding:12px 10px;
       text-align:left;
       vertical-align: top;
-      width: 25%;            /* 👈 전체 4열 → 25%씩 */
+      width: 25%;
     }
     th { background:#f3f4f6; font-weight:800; }
     td.major { font-weight: 800; }
@@ -78,14 +87,34 @@
     /* 숨김/표시 토글 */
     .hidden { display:none !important; }
 
-    .print-area {
-      margin-top: 20px;
-      text-align: center;   /* 버튼 중앙 정렬 */
+    .print-area { margin-top: 20px; text-align: center; }
+    .print-area .btn { background:#111827; color:#fff; border-color:#111827; }
+
+    /* ====== ✅ 모바일 최적화 (≤ 640px) ====== */
+    @media (max-width: 640px) {
+      .container { margin: 20px auto 36px; padding: 0 12px; }
+      .topbar .title { font-size: 18px; line-height: 1.3; }
+      .icon-btn { font-size: 16px; }
+      .icon-btn .material-icons { font-size: 22px; }
+
+      .category { gap:8px; }
+      .category button { width:100%; font-size:16px; padding:10px 12px; }
+
+      .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
+      .card { font-size:16px; min-height:56px; padding:10px; }
+
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .toolbar .btn { width:100%; justify-content:center; }
+
+      .results { margin-top:18px; }
+      th, td { padding:10px 8px; font-size:14px; }
+      .chip { font-size:12px; padding:3px 8px; }
     }
-    .print-area .btn {
-      background:#111827;   /* 필요시 primary 스타일 */
-      color:#fff;
-      border-color:#111827;
+
+    /* ====== ✅ 초소형 보정 (≤ 360px) ====== */
+    @media (max-width: 360px) {
+      .card { min-height: 50px; }
+      .topbar .title { font-size: 16px; }
     }
   </style>
 </head>
