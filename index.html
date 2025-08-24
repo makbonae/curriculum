@@ -10,6 +10,10 @@
     body { margin:0; font-family: system-ui, -apple-system, 'Noto Sans KR', sans-serif; background:#f9fafb; color:#111827; }
     .wrap { max-width: 840px; margin: 48px auto; padding: 0 20px; text-align:center; }
     h1 { font-size: 28px; margin: 18px 0 18px; font-weight: bold; }
+
+    /* ✅ h4를 상대 크기로 조정 (본문 대비 비율) */
+    .wrap h4 { font-size: 0.85em; margin: 0 0 16px; color:#6b7280; }
+
     ul.guide { text-align:left; margin: 0 auto 24px; padding-left:20px; max-width:1000px; line-height:1.6em; color:#374151; font-size:24px; }
     ul.guide li { margin-bottom:6px; }
     .btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
@@ -32,7 +36,10 @@
     @media (max-width: 640px) {
       .wrap { margin: 24px auto; padding: 0 16px; }
       h1 { font-size: 22px; margin: 12px 0 6px; }
-      h4 { margin: 0 0 16px; font-size: 14px; color:#6b7280; }
+
+      /* ✅ 모바일에서도 상대값 유지 (필요시 수치만 조정) */
+      .wrap h4 { font-size: 0.8em; }
+
       ul.guide { font-size: 16px; line-height:1.7; padding-left:16px; }
       .btns { gap:10px; }
       .btn {
@@ -57,7 +64,8 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>2022 개정 교육과정 선택과목 도우미</h1> <h4>(양정고등학교 교수학습지원센터)</h4>
+    <h1>2022 개정 교육과정 선택과목 도우미</h1>
+    <h4>(양정고등학교 교수학습지원센터)</h4>
 
     <!-- 안내문 리스트 -->
     <ul class="guide">
