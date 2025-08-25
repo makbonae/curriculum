@@ -19,39 +19,73 @@ function cacheSet(key, data) {
   try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
 }
 
+/* ---- 작은 헬퍼: 캐시 버스터 쿼리 추가 ---- */
+function addCacheBust(url) {
+  try {
+    const u = new URL(url);
+    u.searchParams.set('cachebust', Date.now());
+    return u.toString();
+  } catch { return url; }
+}
+
+/* ---- 작은 헬퍼: /pub? → /gviz/tq? CSV 폴백 URL 만들기 ---- */
+function toGvizCsvUrl(url) {
+  try {
+    const u = new URL(url);
+    // /spreadsheets/d/e/.../pub → /spreadsheets/d/e/.../gviz/tq
+    u.pathname = u.pathname.replace(/\/pub$/, '/gviz/tq');
+    // output=csv, single 같은 건 제거하고 gviz용 파라미터로 교체
+    u.searchParams.delete('output');
+    u.searchParams.delete('single');
+    // gid는 유지, tqx는 CSV 지정
+    u.searchParams.set('tqx', 'out:csv');
+    return u.toString();
+  } catch { return url; }
+}
+
 /* ===== CSV 로딩 & 파싱 ===== */
 async function fetchSheetRows(sheetKey) {
-  const url = CSV_URLS[sheetKey];
-  if (!url) throw new Error(`CSV URL 미설정: ${sheetKey}`);
+  const base = CSV_URLS[sheetKey];
+  if (!base) throw new Error(`CSV URL 미설정: ${sheetKey}`);
 
   const cacheKey = `csv:${sheetKey}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`CSV 요청 실패: ${res.status}`);
-  const csvText = await res.text();
+  // 1차: 게시 CSV(/pub?output=csv) + 캐시버스터
+  const primary = addCacheBust(base);
+  // 2차: gviz CSV 폴백(/gviz/tq?tqx=out:csv) + 캐시버스터
+  const fallback = addCacheBust(toGvizCsvUrl(base));
 
-  // Papa Parse가 전역에 로드되어 있어야 함
-  const parsed = Papa.parse(csvText, {
-    header: true,
-    dynamicTyping: false,
-    skipEmptyLines: true
-  });
-  if (parsed.errors?.length) console.warn('CSV parse errors:', parsed.errors);
+  // 순차 시도
+  let lastErr;
+  for (const url of [primary, fallback]) {
+    try {
+      const res = await fetch(url, { mode: 'cors', redirect: 'follow', cache: 'no-store', credentials: 'omit' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const csvText = await res.text();
 
-  const rows = (parsed.data || []).map(row => {
-    const cleaned = {};
-    for (const k in row) {
-      const key = (k || '').trim();
-      const val = typeof row[k] === 'string' ? row[k].trim() : row[k];
-      if (key) cleaned[key] = val;
+      const parsed = Papa.parse(csvText, { header: true, dynamicTyping: false, skipEmptyLines: true });
+      if (parsed.errors?.length) console.warn('CSV parse errors:', parsed.errors);
+
+      const rows = (parsed.data || []).map(row => {
+        const cleaned = {};
+        for (const k in row) {
+          const key = (k || '').trim();
+          const val = typeof row[k] === 'string' ? row[k].trim() : row[k];
+          if (key) cleaned[key] = val;
+        }
+        return cleaned;
+      });
+
+      cacheSet(cacheKey, rows);
+      return rows;
+    } catch (e) {
+      lastErr = e;
+      // 다음 후보로 계속
     }
-    return cleaned;
-  });
-
-  cacheSet(cacheKey, rows);
-  return rows;
+  }
+  throw new Error(`CSV 요청 실패: ${lastErr?.message || lastErr}`);
 }
 
 /* ===== 스키마 정규화 (헤더명 보정) ===== */
@@ -63,9 +97,9 @@ function normalizeMajors(rows) {
     major_type: r.major_type ?? r.type ?? r.계열 ?? '',
     friends:    r.friends ?? r['유사학과'] ?? '',
     desc:       r.desc ?? r['설명'] ?? '',
-    sub1:       r.sub1 ?? r['과목1'] ?? '',
-    sub2:       r.sub2 ?? r['과목2'] ?? '',
-    sub3:       r.sub3 ?? r['과목3'] ?? '',
+    sub1:       r.sub1 ?? r['과목1'] ?? r['일반선택'] ?? '',
+    sub2:       r.sub2 ?? r['과목2'] ?? r['진로선택'] ?? '',
+    sub3:       r.sub3 ?? r['과목3'] ?? r['융합선택'] ?? '',
     univ:       r.univ ?? r['대표대학'] ?? '',
     group:      r.group ?? r['그룹'] ?? r['계열그룹'] ?? ''
   }));
@@ -79,7 +113,6 @@ async function startCategory(sheetKey) {
     if (typeof showLoading === 'function') showLoading('데이터 로딩 중…');
     const rawRows = await fetchSheetRows(sheetKey);
     const items   = normalizeMajors(rawRows);
-    // 아래 함수명을 네가 쓰던 렌더/시작 함수명으로 바꿔줘
     if (typeof startTournament === 'function') {
       startTournament(items, sheetKey);
     } else {
@@ -99,7 +132,6 @@ async function loadSubjects(sheetKey) {
     if (typeof showLoading === 'function') showLoading('과목 데이터 로딩 중…');
     const rawRows = await fetchSheetRows(sheetKey);
     const items   = normalizeMajors(rawRows);
-    // 아래 함수명을 네가 쓰던 렌더 함수명으로 바꿔줘
     if (typeof renderSubjects === 'function') {
       renderSubjects(items);
     } else {
@@ -112,4 +144,3 @@ async function loadSubjects(sheetKey) {
     if (typeof hideLoading === 'function') hideLoading();
   }
 }
-
